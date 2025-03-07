@@ -13,6 +13,7 @@ stages:
   displayName: Build
   jobs:
   - job: Build1
+    dependsOn: []
     displayName: Build1
     steps:
     - script: echo Hello, world!
