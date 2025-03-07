@@ -8,11 +8,20 @@ trigger:
 
 pool: my-personal-computer
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build 1
+    displayName: Build
+    steps:
+    - script: echo Hello, world!
+      displayName: 'Run a one-line script'
+  - job: Build 2
+    displayName: Build
+    steps:
+      - script: |
+          echo Add other tasks to build, test, and deploy your project.
+          echo See https://aka.ms/yaml
+        displayName: 'Run a multi-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
