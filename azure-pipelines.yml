@@ -12,12 +12,12 @@ stages:
 - stage: Build
   displayName: Build
   jobs:
-  - job: Build 1
+  - job: Build1
     displayName: Build
     steps:
     - script: echo Hello, world!
       displayName: 'Run a one-line script'
-  - job: Build 2
+  - job: Build2
     displayName: Build
     steps:
       - script: |
