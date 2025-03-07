@@ -13,12 +13,13 @@ stages:
   displayName: Build
   jobs:
   - job: Build1
-    displayName: Build
+    displayName: Build1
     steps:
     - script: echo Hello, world!
       displayName: 'Run a one-line script'
   - job: Build2
-    displayName: Build
+    DependsOn: []
+    displayName: Build2
     steps:
       - script: |
           echo Add other tasks to build, test, and deploy your project.
