@@ -1,0 +1,10 @@
+# PLS script name to update pipelines, should not be in git!
+cmd.txt
+.idea/
+vendor/
+asd.go
+.envrc
+data/*.db
+debug
+.vscode/
+bin/
