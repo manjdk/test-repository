@@ -18,7 +18,7 @@ stages:
     - script: echo Hello, world!
       displayName: 'Run a one-line script'
   - job: Build2
-    DependsOn: []
+    dependsOn: []
     displayName: Build2
     steps:
       - script: |
