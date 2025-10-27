@@ -1,8 +1,7 @@
 trigger:
   - master
 
-pool:
-  vmImage: 'my-personal-computer'
+pool: 'my-personal-computer'
 
 variables:
   imageRepository: 'test-repository'
