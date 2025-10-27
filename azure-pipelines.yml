@@ -2,7 +2,7 @@ trigger:
   - master
 
 pool:
-  vmImage: 'Hosted Agent'
+  vmImage: 'my-personal-computer'
 
 variables:
   imageRepository: 'test-repository'
