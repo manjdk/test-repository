@@ -1,7 +1,7 @@
 trigger:
   - master
 
-pool: 'my-personal-computer'
+pool: 'Default'
 
 variables:
   imageRepository: 'test-repository'
