@@ -14,7 +14,7 @@ variables:
   tag: $(Build.BuildNumber)
 
 stages:
-  - stage: Build
+  - task: Build
     displayName: Build and push stage
     jobs:
       - job: Build
