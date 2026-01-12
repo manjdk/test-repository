@@ -14,7 +14,7 @@ variables:
   tag: $(Build.BuildNumber)
 
 stages:
-  - task: Build
+  - stage: Build
     displayName: Build and push stage
     jobs:
       - job: Build
@@ -30,14 +30,21 @@ stages:
               tags: |
                 $(tag)
 
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: $(azureServiceConnection)
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        az containerapp update \
-          --name $(containerAppName) \
-          --resource-group $(resourceGroup) \
-          --image $(arcName)/$(imageName):latest
-    displayName: 'Deploy to ACA'
+  - stage: Deploy
+    displayName: 'Deploy to DEV'
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: Deploy
+        steps:
+          - task: AzureCLI@2
+            displayName: Deploy to ACA
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az containerapp update \
+                  --name $(containerAppName) \
+                  --resource-group $(resourceGroup) \
+                  --image $(arcName)/$(imageName):$(tag)
