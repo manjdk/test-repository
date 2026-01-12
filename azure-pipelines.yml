@@ -6,7 +6,11 @@ pool: 'my-personal-computer'
 variables:
   imageRepository: 'test-repository'
   dockerfilePath: 'Dockerfile'
-  dockerRegistryServiceConnection: MyACRServiceConnection
+  azureContainerRegistryServiceConnection: MyACRServiceConnection
+  azureServiceConnection: MyAzureServiceConnection
+  containerAppName: 'test-repository'
+  resourceGroup: 'test-rg-1'
+  arcName: 'testacrdev1'
   tag: $(Build.BuildNumber)
 
 stages:
@@ -22,21 +26,18 @@ stages:
               command: buildAndPush
               repository: $(imageRepository)
               dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
+              containerRegistry: $(azureContainerRegistryServiceConnection)
               tags: |
                 $(tag)
 
-#  - stage: Deploy
-#    displayName: Deploy to App Service
-#    jobs:
-#      - job: Deploy
-#        displayName: Deploy
-#        steps:
-#          - task: AzureRmWebAppDeployment@4
-#        inputs:
-#          ConnectionType: 'AzureRM'
-#          azureSubscription: 'my-subscription-name'
-#          appType: 'webAppHyperVContainer'
-#          WebAppName: 'my-app-name'
-#          DockerNamespace: 'myregsitry.azurecr.io'
-#          DockerRepository: 'dotnetframework:12'
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az containerapp update \
+          --name $(containerAppName) \
+          --resource-group $(resourceGroup) \
+          --image $(arcName)/$(imageName):latest
+    displayName: 'Deploy to ACA'
