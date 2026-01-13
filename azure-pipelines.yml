@@ -36,12 +36,15 @@ stages:
     condition: succeeded()
     jobs:
       - job: Deploy
-        displayName: Deploy to Azure Container Apps
         steps:
-          - task: AzureContainerApps@1
+          - task: AzureCLI@2
             displayName: Deploy to ACA
             inputs:
               azureSubscription: $(azureServiceConnection)
-              resourceGroup: $(resourceGroup)
-              containerAppName: $(containerAppName)
-              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |x
+                az containerapp update \
+                  --name $(containerAppName) \
+                  --resource-group $(resourceGroup) \
+                  --image $(arcName)/$(imageName):$(tag)
