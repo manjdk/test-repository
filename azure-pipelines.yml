@@ -12,6 +12,7 @@ variables:
   resourceGroup: 'test-rg-1'
   arcName: 'testacrdev1'
   tag: $(Build.BuildNumber)
+  imageName: test-repository
 
 stages:
   - stage: Build
