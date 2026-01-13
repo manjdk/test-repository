@@ -43,7 +43,7 @@ stages:
               azureSubscription: $(azureServiceConnection)
               scriptType: bash
               scriptLocation: inlineScript
-              inlineScript: |x
+              inlineScript: |
                 az containerapp update \
                   --name $(containerAppName) \
                   --resource-group $(resourceGroup) \
