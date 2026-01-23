@@ -66,5 +66,6 @@ stages:
               containerAppName: $(containerAppName)
               containerAppEnvironment: development
               imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
+              registryIdentity: system
               targetPort: 80
               ingress: external
