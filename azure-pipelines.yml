@@ -31,21 +31,40 @@ stages:
               tags: |
                 $(tag)
 
+#  - stage: Deploy
+#    displayName: 'Deploy to DEV'
+#    dependsOn: Build
+#    condition: succeeded()
+#    jobs:
+#      - job: Deploy
+#        steps:
+#          - task: AzureCLI@2
+#            displayName: Deploy to ACA
+#            inputs:
+#              azureSubscription: $(azureServiceConnection)
+#              scriptType: bash
+#              scriptLocation: inlineScript
+#              inlineScript: |
+#                az containerapp update \
+#                  --name $(containerAppName) \
+#                  --resource-group $(resourceGroup) \
+#                  --image $(arcName)/$(imageName):$(tag)
+
   - stage: Deploy
-    displayName: 'Deploy to DEV'
+    displayName: Deploy to DEV
     dependsOn: Build
     condition: succeeded()
     jobs:
       - job: Deploy
+        displayName: Create or Update Container App
         steps:
-          - task: AzureCLI@2
-            displayName: Deploy to ACA
+          - task: AzureContainerApps@1
+            displayName: Deploy to Azure Container Apps
             inputs:
               azureSubscription: $(azureServiceConnection)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                az containerapp update \
-                  --name $(containerAppName) \
-                  --resource-group $(resourceGroup) \
-                  --image $(arcName)/$(imageName):$(tag)
+              resourceGroup: $(resourceGroup)
+              containerAppName: $(containerAppName)
+              containerAppEnvironment: development
+              imageToDeploy: $(arcName)/$(imageName):$(tag)
+              targetPort: 80
+              ingress: external
