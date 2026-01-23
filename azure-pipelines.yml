@@ -65,6 +65,6 @@ stages:
               resourceGroup: $(resourceGroup)
               containerAppName: $(containerAppName)
               containerAppEnvironment: development
-              imageToDeploy: $(arcName)/$(imageName):$(tag)
+              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
               targetPort: 80
               ingress: external
