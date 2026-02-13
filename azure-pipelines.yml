@@ -63,6 +63,8 @@ stages:
               echo "Image Name: $(imageName)"
               echo "Tag: $(tag)"
               echo "Full Image: $(acrName).azurecr.io/$(imageName):$(tag)"
+          - script: |
+              az acr repository show --name $(acrName) --repository $(imageName) --output table
           - task: AzureContainerApps@1
             displayName: Deploy to Azure Container Apps
             inputs:
