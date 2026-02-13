@@ -13,6 +13,7 @@ variables:
   arcName: 'testacrdev1'
   tag: $(Build.BuildNumber)
   imageName: test-repository
+  system.debug: true
 
 stages:
   - stage: Build
