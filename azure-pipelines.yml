@@ -55,14 +55,14 @@ stages:
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - script: |
-          echo "ACR Name: $(acrName)"
-          echo "Image Name: $(imageName)"
-          echo "Tag: $(tag)"
-          echo "Full Image: $(acrName).azurecr.io/$(imageName):$(tag)"
       - job: Deploy
         displayName: Create or Update Container App
         steps:
+          - script: |
+              echo "ACR Name: $(acrName)"
+              echo "Image Name: $(imageName)"
+              echo "Tag: $(tag)"
+              echo "Full Image: $(acrName).azurecr.io/$(imageName):$(tag)"
           - task: AzureContainerApps@1
             displayName: Deploy to Azure Container Apps
             inputs:
