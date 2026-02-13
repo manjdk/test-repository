@@ -32,23 +32,29 @@ stages:
                 $(tag)
 
 #  - stage: Deploy
-#    displayName: 'Deploy to DEV'
+#    displayName: Deploy to DEV
 #    dependsOn: Build
 #    condition: succeeded()
 #    jobs:
 #      - job: Deploy
+#        displayName: Create or Update Container App
 #        steps:
-#          - task: AzureCLI@2
-#            displayName: Deploy to ACA
+#          - script: |
+#              echo "ACR Name: $(acrName)"
+#              echo "Image Name: $(imageName)"
+#              echo "Tag: $(tag)"
+#              echo "Full Image: $(acrName).azurecr.io/$(imageName):$(tag)"
+#          - task: AzureContainerApps@1
+#            displayName: Deploy to Azure Container Apps
 #            inputs:
 #              azureSubscription: $(azureServiceConnection)
-#              scriptType: bash
-#              scriptLocation: inlineScript
-#              inlineScript: |
-#                az containerapp update \
-#                  --name $(containerAppName) \
-#                  --resource-group $(resourceGroup) \
-#                  --image $(arcName)/$(imageName):$(tag)
+#              resourceGroup: $(resourceGroup)
+#              containerAppName: $(containerAppName)
+#              containerAppEnvironment: development
+#              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
+#              registryIdentity: system
+#              targetPort: 80
+#              ingress: external
 
   - stage: Deploy
     displayName: Deploy to DEV
@@ -56,23 +62,58 @@ stages:
     condition: succeeded()
     jobs:
       - job: Deploy
-        displayName: Create or Update Container App
+        displayName: Deploy Azure Container App
         steps:
+
           - script: |
               echo "ACR Name: $(acrName)"
               echo "Image Name: $(imageName)"
               echo "Tag: $(tag)"
               echo "Full Image: $(acrName).azurecr.io/$(imageName):$(tag)"
+            displayName: 'Debug: Print Container App Variables'
+
           - script: |
-              az acr repository show --name $(acrName) --repository $(imageName) --output table
-          - task: AzureContainerApps@1
-            displayName: Deploy to Azure Container Apps
+              az acr repository show-tags --name $(acrName) --repository $(imageName) --output table
+            displayName: 'Verify image exists in ACR'
+
+          - task: AzureCLI@2
+            displayName: 'Create or Update Azure Container App'
             inputs:
               azureSubscription: $(azureServiceConnection)
-              resourceGroup: $(resourceGroup)
-              containerAppName: $(containerAppName)
-              containerAppEnvironment: development
-              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
-              registryIdentity: system
-              targetPort: 80
-              ingress: external
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                
+                APP_EXISTS=$(az containerapp show \
+                  --name $(containerAppName) \
+                  --resource-group $(resourceGroup) \
+                  --query "name" -o tsv || echo "")
+                
+                if [ -z "$APP_EXISTS" ]; then
+                  echo "Container App does not exist — creating..."
+                  az containerapp create \
+                    --name $(containerAppName) \
+                    --resource-group $(resourceGroup) \
+                    --environment $(containerAppEnvironment) \
+                    --image $(acrName).azurecr.io/$(imageName):$(tag) \
+                    --ingress external \
+                    --target-port 80 \
+                    --registry-server $(acrName).azurecr.io \
+                    --registry-username $(acrUsername) \
+                    --registry-password $(acrPassword)
+                
+                  # Enable system-assigned identity
+                  az containerapp identity assign \
+                    --name $(containerAppName) \
+                    --resource-group $(resourceGroup)
+                
+                  echo "First-time deploy complete. Please assign AcrPull role on ACR to system identity for future deployments."
+                
+                else
+                  echo "Container App exists — updating image..."
+                  az containerapp update \
+                    --name $(containerAppName) \
+                    --resource-group $(resourceGroup) \
+                    --image $(acrName).azurecr.io/$(imageName):$(tag)
+                fi
