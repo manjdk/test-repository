@@ -13,7 +13,6 @@ variables:
   acrName: 'testacrdev1'
   tag: $(Build.BuildNumber)
   imageName: test-repository
-  system.debug: true
 
 stages:
   - stage: Build
@@ -59,10 +58,6 @@ stages:
       - job: Deploy
         displayName: Create or Update Container App
         steps:
-          - script: |
-              echo "ACR Name: $(acrName)"
-              echo "Image Name: $(imageName)"
-              echo "Tag: $(tag)"
           - task: AzureContainerApps@1
             displayName: Deploy to Azure Container Apps
             inputs:
