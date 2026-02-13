@@ -10,7 +10,7 @@ variables:
   azureServiceConnection: MyAzureServiceConnection
   containerAppName: 'test-repository'
   resourceGroup: 'test-rg-1'
-  arcName: 'testacrdev1'
+  acrName: 'testacrdev1'
   tag: $(Build.BuildNumber)
   imageName: test-repository
   system.debug: true
