@@ -74,7 +74,7 @@ stages:
 
           - task: AzureCLI@2
             inputs:
-              azureSubscription: $(azureContainerRegistryServiceConnection)
+              azureSubscription: $(azureServiceConnection)
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
