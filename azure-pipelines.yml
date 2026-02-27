@@ -40,6 +40,7 @@ stages:
         displayName: Create or Update Container App
         steps:
           - task: AzureContainerApps@1
+            displayName: Deploy to Azure Container Apps
             inputs:
               azureSubscription: $(azureServiceConnection)
               resourceGroup: $(resourceGroup)
@@ -49,3 +50,5 @@ stages:
               registryServer: $(acrName).azurecr.io
               registryUsername: $(ACR_USERNAME)
               registryPassword: $(ACR_PASSWORD)
+              targetPort: 80
+              ingress: external
