@@ -49,3 +49,24 @@ stages:
               registryServer: $(acrName).azurecr.io
               registryUsername: $(ACR_USERNAME)
               registryPassword: $(ACR_PASSWORD)
+      - stage: Deploy
+        dependsOn: Build
+        jobs:
+          - job: Deploy
+            steps:
+              - task: AzureCLI@2
+                displayName: Deploy
+                inputs:
+                  azureSubscription: MyAzureServiceConnection
+                  scriptType: bash
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    az deployment group create \
+                      --resource-group $(resourceGroup) \
+                      --template-file infra/main.bicep \
+                      --parameters \
+                          containerAppName=$(containerAppName) \
+                          containerAppEnvName=development \
+                          acrName=$(acrName) \
+                          imageName=$(imageName) \
+                          imageTag=$(tag)
