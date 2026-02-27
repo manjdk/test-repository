@@ -94,20 +94,20 @@ stages:
                 else
                   echo "Container App already exists ✔"
                 fi
-          - task: AzureCLI@2
-            displayName: Ensure ACA exists + AcrPull assigned
-            inputs:
-              azureSubscription: $(azureServiceConnection)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                echo "Configuring Container App to use ACR via Managed Identity..."
-
-                az containerapp registry set \
-                  --name $(containerAppName) \
-                  --resource-group $(resourceGroup) \
-                  --server $(acrName).azurecr.io \
-                  --identity system
+#          - task: AzureCLI@2
+#            displayName: Ensure ACA exists + AcrPull assigned
+#            inputs:
+#              azureSubscription: $(azureServiceConnection)
+#              scriptType: bash
+#              scriptLocation: inlineScript
+#              inlineScript: |
+#                echo "Configuring Container App to use ACR via Managed Identity..."
+#
+#                az containerapp registry set \
+#                  --name $(containerAppName) \
+#                  --resource-group $(resourceGroup) \
+#                  --server $(acrName).azurecr.io \
+#                  --identity system
           - task: AzureContainerApps@1
             displayName: Deploy to Azure Container Apps
             inputs:
