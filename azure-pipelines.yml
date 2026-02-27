@@ -4,48 +4,48 @@ trigger:
 pool: 'Default'
 
 variables:
-  acrName: testacrdev1
+  imageRepository: 'test-repository'
+  dockerfilePath: 'Dockerfile'
+  azureContainerRegistryServiceConnection: MyACRServiceConnection
+  azureServiceConnection: MyAzureServiceConnection
+  containerAppName: 'test-repository'
+  resourceGroup: 'test-rg-1'
+  acrName: 'testacrdev1'
+  tag: $(Build.BuildNumber)
   imageName: test-repository
-  containerAppName: test-repository
-  containerAppEnvName: development
-  resourceGroup: test-rg-1
-  tag: $(Build.SourceVersion)
 
 stages:
-
-  # ---------------- BUILD ----------------
   - stage: Build
+    displayName: Build and push stage
     jobs:
       - job: Build
+        displayName: Build job
         steps:
           - task: Docker@2
+            displayName: Build and push an image to container registry
             inputs:
               command: buildAndPush
-              repository: $(imageName)
-              dockerfile: Dockerfile
-              containerRegistry: MyACRServiceConnection
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(azureContainerRegistryServiceConnection)
               tags: |
                 $(tag)
 
-  # ---------------- DEPLOY INFRA + APP ----------------
   - stage: Deploy
+    displayName: Deploy to DEV
     dependsOn: Build
+    condition: succeeded()
     jobs:
       - job: Deploy
+        displayName: Create or Update Container App
         steps:
-          - task: AzureCLI@2
-            displayName: Deploy Bicep
+          - task: AzureContainerApps@1
             inputs:
-              azureSubscription: MyAzureServiceConnection
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                az deployment group create \
-                  --resource-group $(resourceGroup) \
-                  --template-file infra/main.bicep \
-                  --parameters \
-                      containerAppName=$(containerAppName) \
-                      containerAppEnvName=$(containerAppEnvName) \
-                      acrName=$(acrName) \
-                      imageName=$(imageName) \
-                      imageTag=$(tag)
+              azureSubscription: $(azureServiceConnection)
+              resourceGroup: $(resourceGroup)
+              containerAppName: $(containerAppName)
+              containerAppEnvironment: development
+              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
+              registryServer: $(acrName).azurecr.io
+              registryUsername: $(ACR_USERNAME)
+              registryPassword: $(ACR_PASSWORD)
