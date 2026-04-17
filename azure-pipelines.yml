@@ -92,6 +92,7 @@ stages:
             inputs:
               azureSubscription: '$(azureServiceConnection)'
               acrName: 'testacrdev1'
+              appSourcePath: '$(Build.SourcesDirectory)'
               imageToBuild: 'testacrdev1.azurecr.io/test-repository:$(tag)'
               dockerfilePath: '$(dockerfilePath)'
               containerAppName: 'test-repository'
