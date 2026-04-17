@@ -13,6 +13,7 @@ variables:
   acrName: 'testacrdev1'
   tag: $(Build.BuildNumber)
   imageName: test-repository
+  group: container-app-secrets
 
 stages:
   - stage: Build
@@ -92,6 +93,8 @@ stages:
             inputs:
               azureSubscription: '$(azureServiceConnection)'
               acrName: 'testacrdev1'
+              acrUsername: 'testacrdev1'
+              acrPassword: '$(acrPassword)'
               appSourcePath: '$(Build.SourcesDirectory)'
               imageToBuild: 'testacrdev1.azurecr.io/test-repository:$(tag)'
               dockerfilePath: '$(dockerfilePath)'
