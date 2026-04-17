@@ -1,10 +1,9 @@
-# STAGE 1: Build the binary
 FROM golang:1.21-alpine AS builder
 
-# Set the working directory
-WORKDIR /
+# Install git - required for fetching Go modules
+RUN apk add --no-cache git
 
-# Copy go.mod and go.sum and download dependencies
+WORKDIR /
 COPY go.mod go.sum ./
 RUN go mod download
 
