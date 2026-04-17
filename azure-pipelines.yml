@@ -91,15 +91,15 @@ stages:
         steps:
           - task: AzureContainerApps@1
             inputs:
-              azureSubscription: '$(azureServiceConnection)'
+              azureSubscription: $(azureServiceConnection)
               acrName: 'testacrdev1'
               acrUsername: 'testacrdev1'
-              acrPassword: '$(acrPassword)'
-              appSourcePath: '$(Build.SourcesDirectory)'
+              acrPassword: $(acrPassword)
+              appSourcePath: $(Build.SourcesDirectory)
               imageToBuild: 'testacrdev1.azurecr.io/test-repository:$(tag)'
-              dockerfilePath: '$(dockerfilePath)'
+              dockerfilePath: $(dockerfilePath)
               containerAppName: 'test-repository'
-              resourceGroup: '$(resourceGroup)'
+              resourceGroup: $(resourceGroup)
               containerAppEnvironment: 'development'
               targetPort: 8080
               ingress: 'external'
