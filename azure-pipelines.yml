@@ -53,32 +53,49 @@ stages:
 #              targetPort: 80
 #              ingress: external
 
+##working
+#  - stage: Deploy
+#    displayName: Deploy to Azure Container App
+#    dependsOn: Build
+#    jobs:
+#      - job: Deploy
+#        displayName: Update container app image
+#        steps:
+#          - task: AzureCLI@2
+#            displayName: Deploy latest image to Container App
+#            inputs:
+#              azureSubscription: $(azureServiceConnection)
+#              scriptType: bash
+#              scriptLocation: inlineScript
+#              inlineScript: |
+#                echo "Setting variables"
+#                ACR_LOGIN_SERVER=$(az acr show \
+#                  --name $(acrName) \
+#                  --query loginServer \
+#                  --output tsv)
+#
+#                IMAGE_TAG=$(tag)
+#                IMAGE_NAME=$ACR_LOGIN_SERVER/$(imageName):$IMAGE_TAG
+#
+#                echo "Updating Container App with image: $IMAGE_NAME"
+#
+#                az containerapp update \
+#                  --name $(containerAppName) \
+#                  --resource-group $(resourceGroup) \
+#                  --image $IMAGE_NAME
+
   - stage: Deploy
-    displayName: Deploy to Azure Container App
-    dependsOn: Build
     jobs:
-      - job: Deploy
-        displayName: Update container app image
+      - job: DeployJob
         steps:
-          - task: AzureCLI@2
-            displayName: Deploy latest image to Container App
+          - task: AzureContainerApps@1
             inputs:
-              azureSubscription: $(azureServiceConnection)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                echo "Setting variables"
-                ACR_LOGIN_SERVER=$(az acr show \
-                  --name $(acrName) \
-                  --query loginServer \
-                  --output tsv)
-
-                IMAGE_TAG=$(tag)
-                IMAGE_NAME=$ACR_LOGIN_SERVER/$(imageName):$IMAGE_TAG
-
-                echo "Updating Container App with image: $IMAGE_NAME"
-
-                az containerapp update \
-                  --name $(containerAppName) \
-                  --resource-group $(resourceGroup) \
-                  --image $IMAGE_NAME
+              azureSubscription: '$(azureServiceConnection)'
+              acrName: 'testacrdev1'
+              imageToBuild: 'testacrdev1.azurecr.io/test-repository:$(tag)'
+              dockerfilePath: '$(dockerfilePath)'
+              containerAppName: 'test-repository'
+              resourceGroup: '$(resourceGroup)'
+              containerAppEnvironment: 'development'
+              targetPort: 8080
+              ingress: 'external'
