@@ -102,3 +102,4 @@ stages:
               ingress: 'external'
               # Registry credentials (ensure these are correct)
               acrName: 'testacrdev1'
+              additionalFlags: '--system-assigned'
