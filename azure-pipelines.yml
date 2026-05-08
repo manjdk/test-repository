@@ -89,8 +89,7 @@ stages:
     jobs:
       - job: DeployJob
         variables:
-        # If acrPassword is in a group, ensure it's linked here:
-        # - group: your-variable-group-name
+         - group: container-app-secrets
         steps:
           # 1. DEBUG FIRST: Check if the variable even exists
           - bash: |
