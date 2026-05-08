@@ -88,11 +88,26 @@ stages:
   - stage: Deploy
     jobs:
       - job: DeployJob
+        variables:
+        # If acrPassword is in a group, ensure it's linked here:
+        # - group: your-variable-group-name
         steps:
+          # 1. DEBUG FIRST: Check if the variable even exists
+          - bash: |
+              if [ -z "$MY_SECRET" ]; then
+                echo "##vso[task.logissue type=error]CRITICAL: acrPassword is empty!"
+                exit 1
+              else
+                echo "Variable is present. Length: ${#MY_SECRET}"
+              fi
+            env:
+              MY_SECRET: $(acrPassword)
+            displayName: 'Pre-flight Check: Secret Presence'
+
+          # 2. DEPLOY SECOND
           - task: AzureContainerApps@1
             inputs:
               azureSubscription: $(azureServiceConnection)
-              # Use imageToDeploy for an existing ACR image
               imageToDeploy: 'testacrdev1.azurecr.io/test-repository:$(tag)'
               containerAppName: 'test-repository'
               resourceGroup: $(resourceGroup)
@@ -100,19 +115,6 @@ stages:
               location: 'westeurope'
               targetPort: 8080
               ingress: 'external'
-              # Registry credentials (ensure these are correct)
               acrName: 'testacrdev1'
               acrUsername: 'testacrdev1'
               acrPassword: $(acrPassword)
-          - bash: |
-              # Confirm if the variable is empty or not
-              if [ -z "$MY_SECRET" ]; then
-                echo "Variable is EMPTY"
-              else
-                echo "Variable is NOT empty."
-                echo "Length of secret: ${#MY_SECRET}"
-                echo "First character: ${MY_SECRET:0:1}"
-              fi
-            env:
-              MY_SECRET: $(acrPassword)
-            displayName: 'Debug: Check Secret Presence'
