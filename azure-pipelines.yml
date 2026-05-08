@@ -97,6 +97,7 @@ stages:
               containerAppName: 'test-repository'
               resourceGroup: $(resourceGroup)
               containerAppEnvironment: 'development'
+              location: 'Austria East'
               targetPort: 8080
               ingress: 'external'
               # Registry credentials (ensure these are correct)
