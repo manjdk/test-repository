@@ -104,6 +104,15 @@ stages:
               acrName: 'testacrdev1'
               acrUsername: 'testacrdev1'
               acrPassword: $(acrPassword)
-              inlineScript: |
-                echo "username: $(acrUsername)" |
-                echo "password: $(acrPassword)"
+          - bash: |
+              # Confirm if the variable is empty or not
+              if [ -z "$MY_SECRET" ]; then
+                echo "Variable is EMPTY"
+              else
+                echo "Variable is NOT empty."
+                echo "Length of secret: ${#MY_SECRET}"
+                echo "First character: ${MY_SECRET:0:1}"
+              fi
+            env:
+              MY_SECRET: $(acrPassword)
+            displayName: 'Debug: Check Secret Presence'
