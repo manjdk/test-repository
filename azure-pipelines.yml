@@ -105,5 +105,5 @@ stages:
               acrUsername: 'testacrdev1'
               acrPassword: $(acrPassword)
               inlineScript: |
-                echo $(acrUsername) |
-                echo $(acrPassword) |
+                echo "username: " $(acrUsername) |
+                echo "password": $(acrPassword) |
