@@ -17,9 +17,10 @@ func main() {
 func getTimeHandler(w http.ResponseWriter, r *http.Request) {
 	type timeResponse struct {
 		CurrentTime string `json:"current_time"`
+		Works       bool   `json:"works"`
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	currentTime := time.Now().Format(time.RFC3339)
-	json.NewEncoder(w).Encode(timeResponse{CurrentTime: currentTime})
+	json.NewEncoder(w).Encode(timeResponse{CurrentTime: currentTime, Works: true})
 }
