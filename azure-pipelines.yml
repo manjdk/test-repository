@@ -32,78 +32,12 @@ stages:
               tags: |
                 $(tag)
 
-#  - stage: Deploy
-#    displayName: Deploy to DEV
-#    dependsOn: Build
-#    condition: succeeded()
-#    jobs:
-#      - job: Deploy
-#        displayName: Create or Update Container App
-#        steps:
-#          - task: AzureContainerApps@1
-#            displayName: Deploy to Azure Container Apps
-#            inputs:
-#              azureSubscription: $(azureServiceConnection)
-#              resourceGroup: $(resourceGroup)
-#              containerAppName: $(containerAppName)
-#              containerAppEnvironment: development
-#              imageToDeploy: $(acrName).azurecr.io/$(imageName):$(tag)
-#              registryServer: $(acrName).azurecr.io
-#              registryUsername: $(ACR_USERNAME)
-#              registryPassword: $(ACR_PASSWORD)
-#              targetPort: 80
-#              ingress: external
-
-##working
-#  - stage: Deploy
-#    displayName: Deploy to Azure Container App
-#    dependsOn: Build
-#    jobs:
-#      - job: Deploy
-#        displayName: Update container app image
-#        steps:
-#          - task: AzureCLI@2
-#            displayName: Deploy latest image to Container App
-#            inputs:
-#              azureSubscription: $(azureServiceConnection)
-#              scriptType: bash
-#              scriptLocation: inlineScript
-#              inlineScript: |
-#                echo "Setting variables"
-#                ACR_LOGIN_SERVER=$(az acr show \
-#                  --name $(acrName) \
-#                  --query loginServer \
-#                  --output tsv)
-#
-#                IMAGE_TAG=$(tag)
-#                IMAGE_NAME=$ACR_LOGIN_SERVER/$(imageName):$IMAGE_TAG
-#
-#                echo "Updating Container App with image: $IMAGE_NAME"
-#
-#                az containerapp update \
-#                  --name $(containerAppName) \
-#                  --resource-group $(resourceGroup) \
-#                  --image $IMAGE_NAME
-
   - stage: Deploy
     jobs:
       - job: DeployJob
         variables:
          - group: container-app-secrets
         steps:
-          # 1. DEBUG FIRST: Check if the variable even exists
-          - bash: |
-              if [ -z "$MY_SECRET" ]; then
-                echo "##vso[task.logissue type=error]CRITICAL: acrPassword is empty!"
-                exit 1
-              else
-                echo "Variable is present. Length: ${#MY_SECRET}"
-              fi
-            env:
-              MY_SECRET: $(acrPassword)
-            displayName: 'Pre-flight Check: Secret Presence'
-
-          # 2. DEPLOY SECOND
           - task: AzureContainerApps@1
             inputs:
               azureSubscription: $(azureServiceConnection)
